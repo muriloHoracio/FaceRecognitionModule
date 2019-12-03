@@ -37,9 +37,17 @@ def load_data(ds_path, img_size=64):
     shuffled_indeces = np.random.choice(x_test.shape[0], x_test.shape[0], replace=False)
     x_test = x_test[shuffled_indeces]
     y_test = y_test[shuffled_indeces]
-    return (x_train, y_train), (x_test, y_test), len(classes)
+    return (x_train, y_train), (x_test, y_test), len(classes), classes
 
-(x_train, y_train), (x_test, y_test), num_classes = load_data('faces')
+(x_train, y_train), (x_test, y_test), num_classes, classes = load_data('faces')
+
+map_person_json = '{"people": {\n\t"0": "'+classes[0]+'"'
+for i, c in enumerate(classes[1:]):
+	map_person_json += ',\n\t"'+str(i+1)+'": "'+c+'"'
+map_person_json += '\n\t}\n}'
+with open('map_person.json', 'w+') as f:
+	f.write(map_person_json)
+
 print('Train images shape: '+str(x_train.shape))
 print('Train labels shape: '+str(y_train.shape))
 print('Test images shape: '+str(x_test.shape))
@@ -79,3 +87,7 @@ with tf.device('/gpu:0'):
 
     #Trains the model to classify the images on the training set
     model.fit(x_train, y_train, epochs=10, validation_data=(x_test, y_test))
+    model.save('short_arc_model_weights.h5')
+    json_model_arc = model.to_json()
+    with open('short_arc_model_arc.json', 'w+') as f:
+        f.write(json_model_arc)

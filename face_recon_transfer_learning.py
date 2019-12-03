@@ -78,3 +78,7 @@ model.compile(
 
 #Trains the model to classify the images on the training set
 model.fit(x_train, y_train, epochs=200, validation_data=(x_test, y_test))
+model.save('resnet50_model_weights.h5')
+json_model_arc = model.to_json()
+with open('resenet50_model_arc.json','w+') as f:
+   f.write(json_model_arc)
